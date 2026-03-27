@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tetris — Liquid Glass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-layer">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="bg-orb orb-4"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div id="app">
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen active">
+      <div class="glass-panel start-panel">
+        <div class="logo-container">
+          <svg class="logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="12" height="12" rx="3" fill="url(#g1)" opacity="0.95"/>
+            <rect x="18" y="4" width="12" height="12" rx="3" fill="url(#g2)" opacity="0.95"/>
+            <rect x="18" y="18" width="12" height="12" rx="3" fill="url(#g2)" opacity="0.75"/>
+            <rect x="32" y="18" width="12" height="12" rx="3" fill="url(#g3)" opacity="0.95"/>
+            <rect x="4" y="32" width="12" height="12" rx="3" fill="url(#g4)" opacity="0.95"/>
+            <rect x="18" y="32" width="12" height="12" rx="3" fill="url(#g4)" opacity="0.75"/>
+            <rect x="32" y="32" width="12" height="12" rx="3" fill="url(#g1)" opacity="0.85"/>
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#7b68ee"/></linearGradient>
+              <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff6b9d"/><stop offset="100%" stop-color="#ffa07a"/></linearGradient>
+              <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#50fa7b"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient>
+              <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ff6b9d"/></linearGradient>
+            </defs>
+          </svg>
+          <h1 class="game-title">TETRIS</h1>
+          <p class="game-subtitle">Liquid Glass Edition</p>
+        </div>
+        <button id="start-btn" class="glass-button primary" aria-label="Start game">
+          <span>Play</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <div class="controls-hint">
+          <div class="key-row">
+            <div class="key-group"><kbd>&larr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd><span>Move</span></div>
+            <div class="key-group"><kbd>&uarr;</kbd><span>Rotate</span></div>
+          </div>
+          <div class="key-row">
+            <div class="key-group"><kbd>Space</kbd><span>Hard Drop</span></div>
+            <div class="key-group"><kbd>C</kbd><span>Hold</span></div>
+            <div class="key-group"><kbd>P</kbd><span>Pause</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+      <div class="game-layout">
+        <!-- Left panel: Hold + Info -->
+        <div class="side-panel left-panel">
+          <div class="glass-card hold-card">
+            <div class="card-label">HOLD <span class="hold-hint">C</span></div>
+            <canvas id="hold-canvas" width="120" height="90"></canvas>
+          </div>
+          <div class="glass-card stats-card">
+            <div class="stat-row">
+              <span class="stat-label">Score</span>
+              <span class="stat-value" id="score-display">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-row">
+              <span class="stat-label">Level</span>
+              <span class="stat-value" id="level-display">1</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-row">
+              <span class="stat-label">Lines</span>
+              <span class="stat-value" id="lines-display">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center: Board -->
+        <div class="board-wrapper">
+          <div class="board-frame">
+            <canvas id="game-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Right panel: Next pieces -->
+        <div class="side-panel right-panel">
+          <div class="glass-card next-card">
+            <div class="card-label">NEXT</div>
+            <canvas id="next-canvas" width="120" height="320"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div id="pause-overlay" class="overlay">
+      <div class="glass-panel overlay-panel">
+        <h2>Paused</h2>
+        <button id="resume-btn" class="glass-button primary">Resume</button>
+      </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="gameover-overlay" class="overlay">
+      <div class="glass-panel overlay-panel gameover-panel">
+        <h2>Game Over</h2>
+        <div class="final-stats">
+          <div class="final-stat">
+            <span class="final-stat-label">Score</span>
+            <span class="final-stat-value" id="final-score">0</span>
+          </div>
+          <div class="final-stat">
+            <span class="final-stat-label">Level</span>
+            <span class="final-stat-value" id="final-level">1</span>
+          </div>
+          <div class="final-stat">
+            <span class="final-stat-label">Lines</span>
+            <span class="final-stat-value" id="final-lines">0</span>
+          </div>
+        </div>
+        <button id="restart-btn" class="glass-button primary">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">
+      Created with Perplexity Computer
+    </a>
+  </footer>
+
+  <script src="./game.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>
